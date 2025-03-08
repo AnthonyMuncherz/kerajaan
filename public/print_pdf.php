@@ -119,14 +119,25 @@ if ($regenerate) {
                 <h2>Borang Permohonan Keluar Rasmi</h2>
                 <div class="pdf-container">
                     <iframe src="' . SITE_URL . '/' . $pdfPath['main'] . '"></iframe>
-                </div>
+                </div>';
                 
-                <h2>Borang Kenderaan Sendiri 240KM</h2>
-                <div class="pdf-container">
-                    <iframe src="' . SITE_URL . '/' . $pdfPath['240km'] . '"></iframe>
-                </div>
+                // Include the 240km form if it exists
+                if (isset($pdfPath['240km'])) {
+                    echo '<h2>Borang Kenderaan Sendiri 240KM</h2>
+                    <div class="pdf-container">
+                        <iframe src="' . SITE_URL . '/' . $pdfPath['240km'] . '"></iframe>
+                    </div>';
+                }
                 
-                <div class="buttons">
+                // Include the attachment if it exists
+                if (isset($pdfPath['attachment'])) {
+                    echo '<h2>LAMPIRAN SURAT KELUAR ATAS TUGAS RASMI</h2>
+                    <div class="pdf-container">
+                        <iframe src="' . SITE_URL . '/' . $pdfPath['attachment'] . '"></iframe>
+                    </div>';
+                }
+                
+                echo '<div class="buttons">
                     <a href="javascript:window.print()" class="btn btn-print">Cetak Semua</a>
                     <a href="' . SITE_URL . '/dashboard.php" class="btn">Kembali ke Dashboard</a>
                 </div>

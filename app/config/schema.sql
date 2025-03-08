@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS applications (
     remarks TEXT,
     pdf_path VARCHAR(255) DEFAULT NULL,
     form_240km_data TEXT DEFAULT NULL,
+    attachment_path VARCHAR(255) DEFAULT NULL,
     approver_id INT DEFAULT NULL,
     
     -- Ketua Jabatan/Unit approval fields

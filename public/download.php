@@ -34,6 +34,38 @@ if (!preg_match('/^[a-zA-Z0-9_\/-]+\.[a-zA-Z0-9]+$/', basename($file))) {
     die('Invalid file format');
 }
 
+// Check if this is an attachment
+$isAttachment = strpos($file, 'uploads/attachments/') !== false;
+
+// For attachments, we'll just download directly
+if ($isAttachment) {
+    $filePath = dirname(dirname(__FILE__)) . '/' . $file;
+    
+    // Check if file exists
+    if (!file_exists($filePath)) {
+        die('Attachment file not found');
+    }
+    
+    // Get file information
+    $fileInfo = pathinfo($filePath);
+    $fileName = $fileInfo['basename'];
+    
+    // Set appropriate content type
+    $contentType = 'application/pdf';
+    
+    // Set headers for download
+    header('Content-Type: ' . $contentType);
+    header('Content-Disposition: attachment; filename="' . $fileName . '"');
+    header('Content-Length: ' . filesize($filePath));
+    header('Cache-Control: no-cache, no-store, must-revalidate');
+    header('Pragma: no-cache');
+    header('Expires: 0');
+    
+    // Output file content
+    readfile($filePath);
+    exit;
+}
+
 // Get application ID from file path
 preg_match('/exit_form_(\d+)_/', $file, $matches);
 $applicationId = isset($matches[1]) ? (int)$matches[1] : 0;

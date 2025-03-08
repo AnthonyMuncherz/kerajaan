@@ -35,8 +35,8 @@ class ApplicationModel {
                     user_id, purpose_type, purpose_details, duty_location, 
                     transportation_type, transportation_details, distance_estimate,
                     personal_vehicle_reason, start_date, end_date, exit_time, return_time,
-                    form_240km_data
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    form_240km_data, attachment_path
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             
             $stmt->execute([
@@ -52,7 +52,8 @@ class ApplicationModel {
                 $data['end_date'],
                 $data['exit_time'],
                 $data['return_time'],
-                $data['form_240km_data'] ?? null
+                $data['form_240km_data'] ?? null,
+                $data['attachment_path'] ?? null
             ]);
             
             return $this->pdo->lastInsertId();
@@ -224,6 +225,18 @@ class ApplicationModel {
             // Add form_240km_data column if it doesn't exist
             if (!$form240kmExists) {
                 $this->pdo->exec("ALTER TABLE applications ADD COLUMN form_240km_data TEXT AFTER pdf_path");
+            }
+            
+            // Check if attachment_path column exists
+            $attachmentPathExists = false;
+            $stmt = $this->pdo->query("SHOW COLUMNS FROM applications LIKE 'attachment_path'");
+            if ($stmt->rowCount() > 0) {
+                $attachmentPathExists = true;
+            }
+            
+            // Add attachment_path column if it doesn't exist
+            if (!$attachmentPathExists) {
+                $this->pdo->exec("ALTER TABLE applications ADD COLUMN attachment_path VARCHAR(255) DEFAULT NULL AFTER form_240km_data");
             }
             
             return true;
@@ -478,6 +491,28 @@ class ApplicationModel {
             return $stmt->execute([$pdfPath, $id]);
         } catch (PDOException $e) {
             error_log('Update PDF Path Error: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Update attachment path for an application
+     * 
+     * @param int $id Application ID
+     * @param string $attachmentPath Path to the attachment file
+     * @return bool Success status
+     */
+    public function updateAttachmentPath($id, $attachmentPath) {
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE applications 
+                SET attachment_path = ?
+                WHERE id = ?
+            ");
+            
+            return $stmt->execute([$attachmentPath, $id]);
+        } catch (PDOException $e) {
+            error_log('Update Attachment Path Error: ' . $e->getMessage());
             return false;
         }
     }

@@ -52,6 +52,9 @@ function generateExitFormPDF($application, $user) {
     $mainFormHtmlPath = $pdfDir . '/main_form_' . $timestamp . '.html';
     $form240kmHtmlPath = $pdfDir . '/240km_form_' . $timestamp . '.html';
     
+    // Process PDF files to be merged
+    $pdfFilesToMerge = [];
+    
     // Check if this is a 240km form application
     $has240kmForm = false;
     $form240kmData = null;
@@ -69,6 +72,16 @@ function generateExitFormPDF($application, $user) {
         pdfDebugLog('240km form data: ' . print_r($form240kmData, true));
     }
     
+    // Check if there's an attachment
+    $hasAttachment = false;
+    if (!empty($application['attachment_path'])) {
+        $attachmentPath = dirname(dirname(__DIR__)) . '/' . $application['attachment_path'];
+        if (file_exists($attachmentPath)) {
+            $hasAttachment = true;
+            pdfDebugLog('Attachment found: ' . $attachmentPath);
+        }
+    }
+    
     try {
         // Generate main form HTML and save it
         $mainFormHtml = generateMainFormHTML($application, $user);
@@ -77,6 +90,10 @@ function generateExitFormPDF($application, $user) {
         
         // Generate PDF for main form
         $mainFormPdfGenerated = generatePdfFromHtml($mainFormHtml, $mainFormOutputPath);
+        
+        if ($mainFormPdfGenerated) {
+            $pdfFilesToMerge[] = $mainFormOutputPath;
+        }
         
         // If we have 240km form data, generate that as well
         $form240kmPdfGenerated = false;
@@ -88,12 +105,17 @@ function generateExitFormPDF($application, $user) {
             
             // Generate PDF for 240km form
             $form240kmPdfGenerated = generatePdfFromHtml($form240kmHtml, $form240kmOutputPath);
+            
+            if ($form240kmPdfGenerated) {
+                $pdfFilesToMerge[] = $form240kmOutputPath;
+            }
         }
         
         // Determine which path to return
         $returnPath = '';
         
-        if ($mainFormPdfGenerated && $form240kmPdfGenerated) {
+        // Merge PDFs if we have more than one (main form and 240km form)
+        if (count($pdfFilesToMerge) > 1 || ($mainFormPdfGenerated && $hasAttachment)) {
             // Try to merge the PDFs
             try {
                 // First check if we can use FPDI
@@ -102,20 +124,29 @@ function generateExitFormPDF($application, $user) {
                 if (class_exists('\\setasign\\Fpdi\\Fpdi') && class_exists('FPDF')) {
                     $pdf = new \setasign\Fpdi\Fpdi();
                     
-                    // Add first PDF
-                    $pageCount = $pdf->setSourceFile($mainFormOutputPath);
-                    for ($i = 1; $i <= $pageCount; $i++) {
-                        $template = $pdf->importPage($i);
-                        $pdf->AddPage();
-                        $pdf->useTemplate($template);
+                    // Add all PDFs in the merge list
+                    foreach ($pdfFilesToMerge as $pdfFile) {
+                        $pageCount = $pdf->setSourceFile($pdfFile);
+                        for ($i = 1; $i <= $pageCount; $i++) {
+                            $template = $pdf->importPage($i);
+                            $pdf->AddPage();
+                            $pdf->useTemplate($template);
+                        }
                     }
                     
-                    // Add second PDF
-                    $pageCount = $pdf->setSourceFile($form240kmOutputPath);
-                    for ($i = 1; $i <= $pageCount; $i++) {
-                        $template = $pdf->importPage($i);
-                        $pdf->AddPage();
-                        $pdf->useTemplate($template);
+                    // Add attachment if available
+                    if ($hasAttachment) {
+                        try {
+                            $pageCount = $pdf->setSourceFile($attachmentPath);
+                            for ($i = 1; $i <= $pageCount; $i++) {
+                                $template = $pdf->importPage($i);
+                                $pdf->AddPage();
+                                $pdf->useTemplate($template);
+                            }
+                            pdfDebugLog("Attachment added to PDF");
+                        } catch (Exception $e) {
+                            pdfDebugLog("Error adding attachment to PDF: " . $e->getMessage());
+                        }
                     }
                     
                     // Save the merged PDF
@@ -127,53 +158,94 @@ function generateExitFormPDF($application, $user) {
                     // Alternative approach: create a special HTML file with both forms
                     pdfDebugLog("FPDI or FPDF class not found, using alternative approach");
                     
-                    // Read both HTML files
-                    $mainFormHtmlContent = file_get_contents($mainFormHtmlPath);
-                    $form240kmHtmlContent = file_get_contents($form240kmHtmlPath);
-                    
-                    // Extract the body content from the 240km form
-                    preg_match('/<body>(.*?)<\/body>/s', $form240kmHtmlContent, $matches);
-                    $form240kmBodyContent = isset($matches[1]) ? $matches[1] : $form240kmHtmlContent;
-                    
-                    // Create a combined HTML with pagebreak
-                    $combinedHtml = $mainFormHtmlContent;
-                    $combinedHtml = str_replace('</body>', 
-                        '<div style="page-break-after: always;"></div><h2 style="page-break-before: always;">Borang 240KM</h2>' . 
-                        $form240kmBodyContent . 
-                        '</body>', $combinedHtml);
-                    
-                    // Save the combined HTML
-                    $combinedHtmlPath = $pdfDir . '/combined_' . $timestamp . '.html';
-                    file_put_contents($combinedHtmlPath, $combinedHtml);
-                    
-                    // Generate a new PDF from the combined HTML
-                    if (generatePdfFromHtml($combinedHtml, $combinedOutputPath)) {
-                        pdfDebugLog("Combined PDF generated using HTML approach");
-                        $returnPath = 'app/pdf/' . $combinedFilename;
-                        
-                        // Clean up the combined HTML file
-                        if (file_exists($combinedHtmlPath)) {
-                            unlink($combinedHtmlPath);
-                        }
-                    } else {
-                        pdfDebugLog("Failed to generate combined PDF, returning both PDFs");
-                        // Return both PDFs in an array - this will be handled by print_pdf.php
-                        return [
+                    // If we only have one PDF but we have an attachment
+                    if (count($pdfFilesToMerge) === 1 && $hasAttachment) {
+                        $returnPath = [
                             'main' => 'app/pdf/' . $mainFormFilename,
-                            '240km' => 'app/pdf/' . $form240kmFilename
+                            'attachment' => $application['attachment_path']
                         ];
+                    } else {
+                        // Read both HTML files
+                        $mainFormHtmlContent = file_get_contents($mainFormHtmlPath);
+                        $form240kmHtmlContent = file_get_contents($form240kmHtmlPath);
+                        
+                        // Extract the body content from the 240km form
+                        preg_match('/<body>(.*?)<\/body>/s', $form240kmHtmlContent, $matches);
+                        $form240kmBodyContent = isset($matches[1]) ? $matches[1] : $form240kmHtmlContent;
+                        
+                        // Create a combined HTML with pagebreak
+                        $combinedHtml = $mainFormHtmlContent;
+                        $combinedHtml = str_replace('</body>', 
+                            '<div style="page-break-after: always;"></div><h2 style="page-break-before: always;">Borang 240KM</h2>' . 
+                            $form240kmBodyContent . 
+                            '</body>', $combinedHtml);
+                        
+                        // Save the combined HTML
+                        $combinedHtmlPath = $pdfDir . '/combined_' . $timestamp . '.html';
+                        file_put_contents($combinedHtmlPath, $combinedHtml);
+                        
+                        // Generate a new PDF from the combined HTML
+                        if (generatePdfFromHtml($combinedHtml, $combinedOutputPath)) {
+                            pdfDebugLog("Combined PDF generated using HTML approach");
+                            
+                            if ($hasAttachment) {
+                                $returnPath = [
+                                    'main' => 'app/pdf/' . $combinedFilename,
+                                    'attachment' => $application['attachment_path']
+                                ];
+                            } else {
+                                $returnPath = 'app/pdf/' . $combinedFilename;
+                            }
+                            
+                            // Clean up the combined HTML file
+                            if (file_exists($combinedHtmlPath)) {
+                                unlink($combinedHtmlPath);
+                            }
+                        } else {
+                            pdfDebugLog("Failed to generate combined PDF, returning both PDFs");
+                            
+                            $returnFiles = [
+                                'main' => 'app/pdf/' . $mainFormFilename
+                            ];
+                            
+                            if ($form240kmPdfGenerated) {
+                                $returnFiles['240km'] = 'app/pdf/' . $form240kmFilename;
+                            }
+                            
+                            if ($hasAttachment) {
+                                $returnFiles['attachment'] = $application['attachment_path'];
+                            }
+                            
+                            return $returnFiles;
+                        }
                     }
                 }
             } catch (Exception $e) {
                 pdfDebugLog("Error merging PDFs: " . $e->getMessage() . "\n" . $e->getTraceAsString());
-                // Return both PDFs in an array
-                return [
-                    'main' => 'app/pdf/' . $mainFormFilename,
-                    '240km' => 'app/pdf/' . $form240kmFilename
+                
+                $returnFiles = [
+                    'main' => 'app/pdf/' . $mainFormFilename
                 ];
+                
+                if ($form240kmPdfGenerated) {
+                    $returnFiles['240km'] = 'app/pdf/' . $form240kmFilename;
+                }
+                
+                if ($hasAttachment) {
+                    $returnFiles['attachment'] = $application['attachment_path'];
+                }
+                
+                return $returnFiles;
             }
         } else if ($mainFormPdfGenerated) {
-            $returnPath = 'app/pdf/' . $mainFormFilename;
+            if ($hasAttachment) {
+                $returnPath = [
+                    'main' => 'app/pdf/' . $mainFormFilename,
+                    'attachment' => $application['attachment_path']
+                ];
+            } else {
+                $returnPath = 'app/pdf/' . $mainFormFilename;
+            }
         } else {
             pdfDebugLog("Failed to generate any PDFs");
             return null;

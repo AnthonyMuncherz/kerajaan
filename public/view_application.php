@@ -195,6 +195,19 @@ include '../app/views/includes/header.php';
                 <p><?= nl2br($application['remarks']) ?></p>
             </div>
         <?php endif; ?>
+        
+        <?php if (!empty($application['attachment_path'])): ?>
+            <hr>
+            
+            <div class="field application-details">
+                <label class="label">LAMPIRAN SURAT KELUAR ATAS TUGAS RASMI</label>
+                <p>
+                    <a href="<?= SITE_URL ?>/download.php?file=<?= $application['attachment_path'] ?>" class="button is-small is-primary">
+                        <i class="fas fa-file-pdf mr-2"></i> Lihat Lampiran
+                    </a>
+                </p>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

@@ -86,34 +86,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($needs240kmForm && !$has240kmForm) {
         $error = 'Untuk perjalanan melebihi 240KM dengan kenderaan sendiri, anda perlu melengkapkan borang tambahan. Sila isi borang tambahan terlebih dahulu.';
     } else {
-        // Create application
-        $applicationId = $applicationModel->createApplication($formData);
+        // Process attachment upload if provided
+        $attachmentPath = null;
+        if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+            $fileInfo = pathinfo($_FILES['attachment']['name']);
+            $fileExtension = strtolower($fileInfo['extension']);
+            
+            // Validate file type
+            if ($fileExtension !== 'pdf') {
+                $error = 'Hanya fail PDF diterima untuk lampiran surat tugas rasmi.';
+            } else {
+                // Create upload directory if it doesn't exist
+                $uploadDir = '../uploads/attachments/';
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                
+                // Generate unique filename
+                $uniqueFilename = uniqid('attachment_') . '_' . time() . '.pdf';
+                $uploadPath = $uploadDir . $uniqueFilename;
+                
+                // Move uploaded file
+                if (move_uploaded_file($_FILES['attachment']['tmp_name'], $uploadPath)) {
+                    $attachmentPath = 'uploads/attachments/' . $uniqueFilename;
+                } else {
+                    $error = 'Gagal memuat naik fail lampiran. Sila cuba lagi.';
+                }
+            }
+        }
         
-        if ($applicationId) {
-            // Set success message
-            $success = 'Permohonan telah berjaya dihantar. ID Permohonan: ' . $applicationId;
+        if (empty($error)) {
+            // Include attachment path in form data
+            $formData['attachment_path'] = $attachmentPath;
             
-            // Clear form data
-            $formData = [
-                'purpose_type' => '',
-                'purpose_details' => '',
-                'duty_location' => '',
-                'transportation_type' => '',
-                'transportation_details' => '',
-                'distance_estimate' => '',
-                'personal_vehicle_reason' => '',
-                'start_date' => '',
-                'end_date' => '',
-                'exit_time' => '',
-                'return_time' => '',
-                'form_240km_data' => ''
-            ];
+            // Create application
+            $applicationId = $applicationModel->createApplication($formData);
             
-            // Redirect to view application page
-            header('Location: ' . SITE_URL . '/view_application.php?id=' . $applicationId . '&success=1');
-            exit;
-        } else {
-            $error = 'Permohonan tidak berjaya. Sila cuba lagi.';
+            if ($applicationId) {
+                // Set success message
+                $success = 'Permohonan telah berjaya dihantar. ID Permohonan: ' . $applicationId;
+                
+                // Clear form data
+                $formData = [
+                    'purpose_type' => '',
+                    'purpose_details' => '',
+                    'duty_location' => '',
+                    'transportation_type' => '',
+                    'transportation_details' => '',
+                    'distance_estimate' => '',
+                    'personal_vehicle_reason' => '',
+                    'start_date' => '',
+                    'end_date' => '',
+                    'exit_time' => '',
+                    'return_time' => '',
+                    'form_240km_data' => ''
+                ];
+                
+                // Redirect to view application page
+                header('Location: ' . SITE_URL . '/view_application.php?id=' . $applicationId . '&success=1');
+                exit;
+            } else {
+                $error = 'Permohonan tidak berjaya. Sila cuba lagi.';
+            }
         }
     }
 }
@@ -150,7 +184,7 @@ include '../app/views/includes/header.php';
             </div>
         <?php endif; ?>
         
-        <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="application-form">
+        <form method="POST" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" class="application-form" enctype="multipart/form-data">
             <!-- Hidden field for 240km form data -->
             <input type="hidden" name="form_240km_data" id="form_240km_data" value="">
             
@@ -335,6 +369,27 @@ include '../app/views/includes/header.php';
                 </div>
             </div>
             
+            <div class="field">
+                <label class="label">LAMPIRAN SURAT KELUAR ATAS TUGAS RASMI</label>
+                <div class="file has-name is-fullwidth">
+                    <label class="file-label">
+                        <input class="file-input" type="file" name="attachment" accept=".pdf">
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Pilih fail PDF...
+                            </span>
+                        </span>
+                        <span class="file-name">
+                            Tiada fail dipilih
+                        </span>
+                    </label>
+                </div>
+                <p class="help">Lampirkan surat tempat bertugas sebagai bukti tugas rasmi (format PDF sahaja)</p>
+            </div>
+            
             <div class="field mt-5">
                 <div class="control">
                     <button type="submit" class="button is-primary">
@@ -375,6 +430,20 @@ include '../app/views/includes/header.php';
         const form240kmContent = document.getElementById('form240kmContent');
         const form240kmDataField = document.getElementById('form_240km_data');
         const mainForm = document.querySelector('form[method="post"]');
+        
+        // File input display
+        const fileInput = document.querySelector('.file-input');
+        const fileName = document.querySelector('.file-name');
+        
+        if (fileInput && fileName) {
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    fileName.textContent = fileInput.files[0].name;
+                } else {
+                    fileName.textContent = 'Tiada fail dipilih';
+                }
+            });
+        }
         
         // Handle personal vehicle checkbox
         if (kenderaanSendiriCheckbox && personalVehicleReasonContainer) {
