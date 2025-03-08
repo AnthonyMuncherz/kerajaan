@@ -62,49 +62,68 @@ Sistem ini dibangunkan khas untuk memudahkan proses permohonan keluar di Institu
 
 ### Panduan Pemasangan untuk Server Linux
 
-1. **Prasyarat**
-   - Update pakej sistem:
-     ```bash
-     sudo apt update && sudo apt upgrade -y  # Ubuntu/Debian
-     # ATAU
-     sudo yum update -y  # CentOS/RHEL
-     ```
-   
-   - Pasang pakej yang diperlukan:
-     ```bash
-     # Ubuntu/Debian
-     sudo apt install -y apache2 mysql-server php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath git unzip curl
-     
-     # CentOS/RHEL
-     sudo yum install -y httpd mariadb-server php php-cli php-json php-common php-mysqlnd php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath git unzip curl
-     ```
+Berikut adalah langkah-langkah pemasangan sistem pada server Linux. Panduan ini sesuai untuk kebanyakan distribusi Linux, dengan fokus pada Ubuntu/Debian dan CentOS/RHEL.
 
-2. **Mula dan Aktifkan Servis**
+1. **Persiapan Awal**
+   
+   Pertama sekali, kita perlu memastikan sistem dikemaskini:
    ```bash
-   # Ubuntu/Debian
+   # Untuk Ubuntu/Debian
+   sudo apt update && sudo apt upgrade -y
+   
+   # Untuk CentOS/RHEL
+   sudo yum update -y
+   ```
+   
+   Kemudian pasang perisian-perisian yang diperlukan:
+   ```bash
+   # Untuk Ubuntu/Debian
+   sudo apt install -y apache2 mysql-server php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath git unzip curl
+   
+   # Untuk CentOS/RHEL
+   sudo yum install -y httpd mariadb-server php php-cli php-json php-common php-mysqlnd php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath git unzip curl
+   ```
+   
+   > Tip: Perisian yang dipasang mungkin memerlukan ruang sekitar 500MB, jadi pastikan server anda mempunyai cukup ruang.
+
+2. **Hidupkan Servis yang Diperlukan**
+   
+   Hidup dan aktifkan Apache dan MySQL secara automatik ketika server dihidupkan:
+   ```bash
+   # Untuk Ubuntu/Debian
    sudo systemctl start apache2
    sudo systemctl enable apache2
    sudo systemctl start mysql
    sudo systemctl enable mysql
    
-   # CentOS/RHEL
+   # Untuk CentOS/RHEL
    sudo systemctl start httpd
    sudo systemctl enable httpd
    sudo systemctl start mariadb
    sudo systemctl enable mariadb
    ```
 
-3. **Keselamatan MySQL**
+3. **Konfigurasi Keselamatan MySQL**
+   
+   Untuk keselamatan, adalah sangat penting untuk mengkonfigurasi MySQL dengan betul:
    ```bash
    sudo mysql_secure_installation
    ```
-   - Ikuti arahan untuk menetapkan kata laluan root dan mengkonfigurasi tetapan keselamatan.
+   
+   Semasa proses ini, anda boleh:
+   - Tetapkan kata laluan root yang kuat
+   - Buang pengguna anonymous
+   - Hadrkan akses root ke localhost sahaja
+   - Buang pangkalan data ujian
 
-4. **Buat Pangkalan Data dan Pengguna**
+4. **Sediakan Pangkalan Data**
+   
+   Mari kita buat pangkalan data dan pengguna untuk aplikasi:
    ```bash
    sudo mysql -u root -p
    ```
    
+   Setelah masuk, jalankan arahan SQL berikut:
    ```sql
    CREATE DATABASE kerajaan;
    CREATE USER 'kerajaan_user'@'localhost' IDENTIFIED BY 'kata_laluan_selamat';
@@ -112,8 +131,12 @@ Sistem ini dibangunkan khas untuk memudahkan proses permohonan keluar di Institu
    FLUSH PRIVILEGES;
    EXIT;
    ```
+   
+   > Penting: Pastikan anda ganti 'kata_laluan_selamat' dengan kata laluan yang lebih kuat dan selamat!
 
 5. **Pasang Composer**
+   
+   Composer diperlukan untuk menguruskan perpustakaan PHP:
    ```bash
    curl -sS https://getcomposer.org/installer | php
    sudo mv composer.phar /usr/local/bin/composer
@@ -121,61 +144,81 @@ Sistem ini dibangunkan khas untuk memudahkan proses permohonan keluar di Institu
    ```
 
 6. **Pasang wkhtmltopdf**
+   
+   Aplikasi ini memerlukan wkhtmltopdf untuk menjana PDF:
    ```bash
-   # Ubuntu/Debian
+   # Untuk Ubuntu/Debian
    sudo apt install -y wkhtmltopdf
    
-   # CentOS/RHEL
+   # Untuk CentOS/RHEL (agak lebih kompleks)
    sudo yum install -y xorg-x11-fonts-75dpi xorg-x11-fonts-Type1
    sudo yum install -y https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos7.x86_64.rpm
    ```
 
-7. **Muat Turun dan Pasang Aplikasi**
+7. **Pasang Aplikasi**
+   
+   Salin kod aplikasi ke folder web server:
    ```bash
    cd /var/www/html
    sudo git clone https://github.com/username/kerajaan.git
    cd kerajaan
    sudo composer install --no-dev --optimize-autoloader
    ```
-
-8. **Konfigurasi Hak Milik Folder dan Fail**
-   ```bash
-   sudo chown -R www-data:www-data /var/www/html/kerajaan  # Ubuntu/Debian
-   # ATAU
-   sudo chown -R apache:apache /var/www/html/kerajaan  # CentOS/RHEL
    
+   > Nota: Proses ini mungkin mengambil masa beberapa minit bergantung kepada kelajuan server dan sambungan internet.
+
+8. **Tetapkan Hak Akses Fail**
+   
+   Permissionan fail yang betul adalah penting untuk keselamatan:
+   ```bash
+   # Untuk Ubuntu/Debian
+   sudo chown -R www-data:www-data /var/www/html/kerajaan
+   
+   # Untuk CentOS/RHEL
+   sudo chown -R apache:apache /var/www/html/kerajaan
+   
+   # Tetapkan permission yang sewajarnya
    sudo chmod -R 755 /var/www/html/kerajaan
    sudo chmod -R 775 /var/www/html/kerajaan/app/pdf
    sudo chmod -R 775 /var/www/html/kerajaan/app/uploads
    ```
 
 9. **Konfigurasi Aplikasi**
+   
+   Sediakan fail konfigurasi:
    ```bash
+   # Tetapkan konfigurasi umum
    sudo cp app/config/config.example.php app/config/config.php
-   sudo nano app/config/config.php  # Kemaskini tetapan
+   sudo nano app/config/config.php
+   
+   # Tetapkan konfigurasi pangkalan data
    sudo cp app/config/database.example.php app/config/database.php
-   sudo nano app/config/database.php  # Kemaskini tetapan pangkalan data
+   sudo nano app/config/database.php
    ```
+   
+   Pastikan URL, nama pangkalan data, nama pengguna dan kata laluan dimasukkan dengan betul.
 
-10. **Import Pangkalan Data**
+10. **Import Data Awal**
+    
+    Masukkan data awal ke pangkalan data:
     ```bash
     sudo mysql -u kerajaan_user -p kerajaan < database/kerajaan.sql
     ```
 
-11. **Konfigurasi Virtual Host Apache**
+11. **Konfigurasi Virtual Host**
+    
+    Sediakan domain untuk aplikasi:
     ```bash
-    # Ubuntu/Debian
+    # Untuk Ubuntu/Debian
     sudo nano /etc/apache2/sites-available/kerajaan.conf
     ```
     
-    Atau
-    
+    Atau untuk CentOS/RHEL:
     ```bash
-    # CentOS/RHEL
     sudo nano /etc/httpd/conf.d/kerajaan.conf
     ```
     
-    Tambah konfigurasi berikut:
+    Masukkan konfigurasi ini (ubah domain-anda.com kepada domain yang sebenar):
     
     ```apache
     <VirtualHost *:80>
@@ -194,70 +237,94 @@ Sistem ini dibangunkan khas untuk memudahkan proses permohonan keluar di Institu
     </VirtualHost>
     ```
 
-12. **Aktifkan Konfigurasi dan Mod Rewrite**
+12. **Aktifkan Konfigurasi Web**
+    
+    Untuk Ubuntu/Debian:
     ```bash
-    # Ubuntu/Debian
     sudo a2ensite kerajaan.conf
     sudo a2enmod rewrite
     sudo systemctl restart apache2
+    ```
     
-    # CentOS/RHEL
+    Untuk CentOS/RHEL:
+    ```bash
     sudo systemctl restart httpd
     ```
 
-13. **Periksa Konfigurasi Firewall**
+13. **Tetapkan Firewall**
+    
+    Buka port yang diperlukan pada firewall:
     ```bash
-    # Ubuntu/Debian
+    # Untuk Ubuntu/Debian dengan UFW
     sudo ufw allow 80/tcp
     sudo ufw allow 443/tcp
     
-    # CentOS/RHEL
+    # Untuk CentOS/RHEL dengan FirewallD
     sudo firewall-cmd --permanent --add-service=http
     sudo firewall-cmd --permanent --add-service=https
     sudo firewall-cmd --reload
     ```
 
-14. **Penyelenggaraan Rutin**
-    - Jadualkan backup pangkalan data:
+14. **Penyelenggaraan Berkala**
+    
+    Beberapa tips untuk penyelenggaraan sistem:
+    
+    * **Backup Pangkalan Data Harian**
+      
+      Tetapkan jadual backup harian dengan crontab:
       ```bash
       sudo crontab -e
       ```
       
-      Tambah baris berikut untuk backup harian pada jam 2 pagi:
+      Tambah baris ini untuk backup pada jam 2 pagi:
       ```
       0 2 * * * mysqldump -u kerajaan_user -p'kata_laluan_selamat' kerajaan > /var/backups/kerajaan_$(date +\%Y\%m\%d).sql
       ```
       
-    - Jadualkan task untuk membersihkan fail sementara setiap minggu:
+      > Peringatan: Simpan backup di lokasi luaran atau cloud untuk keselamatan tambahan.
+      
+    * **Pembersihan Fail Sementara**
+      
+      Buang fail sementara yang lebih lama dari seminggu:
       ```
       0 3 * * 0 find /var/www/html/kerajaan/app/pdf/temp -type f -mtime +7 -delete
       ```
 
-15. **Pemantauan dan Keselamatan**
-    - Pantau log sistem dan aplikasi secara berkala:
+15. **Pemantauan Sistem**
+    
+    * **Semak Log Untuk Isu**
       ```bash
-      sudo tail -f /var/log/apache2/kerajaan-error.log  # Ubuntu/Debian
-      # ATAU
-      sudo tail -f /var/log/httpd/kerajaan-error.log  # CentOS/RHEL
+      # Untuk Ubuntu/Debian
+      sudo tail -f /var/log/apache2/kerajaan-error.log
+      
+      # Untuk CentOS/RHEL
+      sudo tail -f /var/log/httpd/kerajaan-error.log
       ```
     
-    - Pastikan sistem sentiasa dikemaskini:
+    * **Pastikan Sistem Sentiasa Dikemaskini**
       ```bash
-      sudo apt update && sudo apt upgrade -y  # Ubuntu/Debian
-      # ATAU
-      sudo yum update -y  # CentOS/RHEL
+      # Untuk Ubuntu/Debian - boleh dijadualkan setiap minggu
+      sudo apt update && sudo apt upgrade -y
+      
+      # Untuk CentOS/RHEL
+      sudo yum update -y
       ```
 
-Jika aplikasi memerlukan HTTPS, gunakan Let's Encrypt untuk mendapatkan sijil SSL percuma:
+**Pemasangan HTTPS (Amat Digalakkan)**
+
+Untuk keselamatan yang lebih baik, sila pasang sijil SSL dengan Let's Encrypt:
+
 ```bash
-# Ubuntu/Debian
+# Untuk Ubuntu/Debian
 sudo apt install -y certbot python3-certbot-apache
 sudo certbot --apache -d domain-anda.com
 
-# CentOS/RHEL
+# Untuk CentOS/RHEL
 sudo yum install -y certbot python3-certbot-apache
 sudo certbot --apache -d domain-anda.com
 ```
+
+Sijil ini perlu diperbaharui setiap 90 hari, tetapi Let's Encrypt akan melakukannya secara automatik.
 
 ## 👥 Peranan dan Tanggungjawab
 
