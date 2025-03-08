@@ -370,15 +370,14 @@ This certificate needs to be renewed every 90 days, but Let's Encrypt will do th
 ## 📞 Support
 
 If you encounter any problems or need assistance:
-- Contact the System Admin at ext. XXXX
-- Email: admin@ipgkbm.edu.my
-- ICT Room, Level 1, Block A
+- Contact me at
+- Email: aiman0608@gmail.com
 
 ## 🔄 Updates
 
-This system will be updated from time to time for improvements. Any suggestions can be submitted to the ICT team for consideration.
+This system will be updated from time to time for improvements. Any suggestions can contact me
 
 ## 📜 License
 
 Copyright © 2024 Institute of Teacher Education Malay Language Campus
-Developed by ICT Unit, IPG KBM 
+Developed by Zahar
