@@ -52,6 +52,21 @@ include '../../app/views/includes/header.php';
 
 <?php include '../../app/views/includes/flash_messages.php'; ?>
 
+<?php if (isset($_SESSION['confirm_delete'])): ?>
+    <div class="notification is-warning">
+        <button class="delete"></button>
+        <p>Adakah anda pasti mahu memadam permohonan #<?= $_SESSION['confirm_delete'] ?>?</p>
+        <div class="buttons mt-3">
+            <a href="<?= SITE_URL ?>/admin/delete_application.php?id=<?= $_SESSION['confirm_delete'] ?>&confirm=1" class="button is-danger">
+                <i class="fas fa-trash mr-1"></i> Ya, Padam
+            </a>
+            <a href="<?= SITE_URL ?>/admin/applications.php" class="button is-light">
+                Batal
+            </a>
+        </div>
+    </div>
+<?php endif; ?>
+
 <!-- Status filters -->
 <div class="level mb-5">
     <div class="level-left">
@@ -114,15 +129,20 @@ include '../../app/views/includes/header.php';
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="buttons are-small">
-                                        <a href="<?= SITE_URL ?>/view_application.php?id=<?= $application['id'] ?>" class="button is-info">
+                                    <div class="buttons has-addons is-flex-wrap-nowrap">
+                                        <a href="<?= SITE_URL ?>/view_application.php?id=<?= $application['id'] ?>" class="button is-small is-info">
                                             <i class="fas fa-eye mr-1"></i> Lihat
                                         </a>
+                                        
                                         <?php if ($application['status'] === 'approved'): ?>
-                                            <a href="<?= SITE_URL ?>/print_pdf.php?id=<?= $application['id'] ?>&regenerate=1" class="button is-success" target="_blank">
+                                            <a href="<?= SITE_URL ?>/print_pdf.php?id=<?= $application['id'] ?>&regenerate=1" class="button is-small is-success" target="_blank">
                                                 <i class="fas fa-print mr-1"></i> Cetak
                                             </a>
                                         <?php endif; ?>
+                                            
+                                        <a href="<?= SITE_URL ?>/admin/delete_application.php?id=<?= $application['id'] ?>" class="button is-small is-danger">
+                                            <i class="fas fa-trash mr-1"></i> Padam
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -153,4 +173,17 @@ include '../../app/views/includes/header.php';
 <?php
 // Include footer
 include '../../app/views/includes/footer.php';
-?> 
+?>
+
+<script>
+    // Add event listeners to make notifications dismissible
+    document.addEventListener('DOMContentLoaded', function() {
+        // Close button for notification
+        const deleteButtons = document.querySelectorAll('.notification .delete');
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                button.parentNode.remove();
+            });
+        });
+    });
+</script> 

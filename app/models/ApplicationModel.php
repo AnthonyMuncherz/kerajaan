@@ -554,4 +554,44 @@ class ApplicationModel {
             return [];
         }
     }
+    
+    /**
+     * Delete an application
+     * 
+     * @param int $id Application ID
+     * @return bool Success status
+     */
+    public function deleteApplication($id) {
+        try {
+            // Get application details to delete any associated files
+            $application = $this->getApplicationById($id);
+            
+            if ($application) {
+                // Delete PDF file if exists
+                if (!empty($application['pdf_path'])) {
+                    $pdfPath = dirname(dirname(__DIR__)) . '/' . $application['pdf_path'];
+                    if (file_exists($pdfPath)) {
+                        unlink($pdfPath);
+                    }
+                }
+                
+                // Delete attachment if exists
+                if (!empty($application['attachment_path'])) {
+                    $attachmentPath = dirname(dirname(__DIR__)) . '/' . $application['attachment_path'];
+                    if (file_exists($attachmentPath)) {
+                        unlink($attachmentPath);
+                    }
+                }
+                
+                // Delete the application record
+                $stmt = $this->pdo->prepare("DELETE FROM applications WHERE id = ?");
+                return $stmt->execute([$id]);
+            }
+            
+            return false;
+        } catch (PDOException $e) {
+            error_log('deleteApplication Error: ' . $e->getMessage());
+            return false;
+        }
+    }
 } 
