@@ -1,0 +1,130 @@
+/**
+ * Custom styles for Sistem Permohonan Keluar
+ */
+
+/* Add some padding to the top of the body */
+body {
+    padding-top: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Make the footer stick to the bottom */
+.footer {
+    margin-top: auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Card styling */
+.card {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25em 0.75em;
+    border-radius: 290486px;
+    font-size: 0.85em;
+    font-weight: bold;
+}
+
+.status-badge.is-pending {
+    background-color: #ffdd57;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.status-badge.is-approved {
+    background-color: #48c774;
+    color: #fff;
+}
+
+.status-badge.is-rejected {
+    background-color: #f14668;
+    color: #fff;
+}
+
+/* Dashboard stats */
+.dashboard-stats .card {
+    height: 100%;
+}
+
+.dashboard-stats .card-content {
+    padding: 1.5rem;
+}
+
+.dashboard-stats .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.dashboard-stats .stat-label {
+    font-size: 1rem;
+    color: #7a7a7a;
+}
+
+/* Application form */
+.application-form .field {
+    margin-bottom: 1.5rem;
+}
+
+/* Signature area */
+.signature-pad {
+    border: 1px dashed #dbdbdb;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.signature-preview {
+    max-width: 300px;
+    max-height: 100px;
+    margin: 1rem 0;
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: #fff;
+}
+
+/* Login/Register forms */
+.auth-form {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+/* Application details */
+.application-details .field {
+    margin-bottom: 1.5rem;
+}
+
+.application-details .label {
+    font-weight: bold;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .navbar, .footer, button, .notification {
+        display: none !important;
+    }
+    
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: none;
+    }
+} 

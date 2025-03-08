@@ -1,0 +1,25 @@
+# Redirect all requests from root directory to public directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Detect the base directory (handles both /kerajaan/ and custom paths)
+    RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+    RewriteRule ^(.*) - [E=BASE:%1]
+    
+    # If no base was detected, use /kerajaan/
+    RewriteCond %{ENV:BASE} !^
+    RewriteRule ^(.*)$ - [E=BASE:/kerajaan]
+    
+    # Redirect root to public directory
+    RewriteRule ^$ %{ENV:BASE}/public/ [R=302,L]
+    
+    # For all other URLs, redirect to the same URL in the public directory
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ %{ENV:BASE}/public/$1 [R=302,L]
+</IfModule>
+
+# If mod_rewrite is not available, use standard redirect
+<IfModule !mod_rewrite.c>
+    Redirect 302 /kerajaan/ /kerajaan/public/
+</IfModule> 
