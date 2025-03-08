@@ -37,7 +37,7 @@ This system is specially developed to facilitate the exit request process at the
 
 1. **Clone Repository**
    ```bash
-   git clone https://github.com/username/kerajaan.git
+   git clone https://github.com/AnthonyMuncherz/kerajaan.git
    cd kerajaan
    ```
 
@@ -160,7 +160,7 @@ Below are the steps for installing the system on a Linux server. This guide is s
    Copy the application code to the web server folder:
    ```bash
    cd /var/www/html
-   sudo git clone https://github.com/username/kerajaan.git
+   sudo git clone https://github.com/AnthonyMuncherz/kerajaan.git
    cd kerajaan
    sudo composer install --no-dev --optimize-autoloader
    ```
