@@ -1,39 +1,39 @@
-# 📝 Sistem Permohonan Keluar IPG KBM
+# 📝 Exit Request System for IPG KBM
 
-Assalamualaikum dan Salam Sejahtera! 🙏
+Assalamualaikum and Greetings! 🙏
 
-Sistem ini dibangunkan khas untuk memudahkan proses permohonan keluar di Institut Pendidikan Guru Kampus Bahasa Melayu (IPG KBM). Dengan adanya sistem ini, kita dapat menguruskan permohonan keluar dengan lebih sistematik dan efisien.
+This system is specially developed to facilitate the exit request process at the Institute of Teacher Education Malay Language Campus (IPG KBM). With this system, we can manage exit requests more systematically and efficiently.
 
-## 🌟 Ciri-Ciri Utama
+## 🌟 Key Features
 
-### 1. Permohonan Keluar Yang Sistematik
-- Borang digital yang lengkap
-- Proses kelulusan dua peringkat (Ketua Jabatan/Unit & Pengarah)
-- Penjanaan PDF automatik dengan tandatangan digital
-- Status permohonan yang jelas dan mudah difahami
+### 1. Systematic Exit Requests
+- Complete digital forms
+- Two-level approval process (Department/Unit Head & Director)
+- Automatic PDF generation with digital signatures
+- Clear and easy-to-understand request status
 
-### 2. Sistem Multi-Peranan
-- 👤 **Pengguna Biasa**: Boleh membuat permohonan
-- 👨‍💼 **Ketua Jabatan/Unit**: Memberi sokongan pertama
-- 👨‍💼 **Pengarah**: Memberi kelulusan muktamad
-- 👨‍💻 **Admin**: Menguruskan sistem dan pengguna
+### 2. Multi-Role System
+- 👤 **Regular User**: Can make requests
+- 👨‍💼 **Department/Unit Head**: Provides initial approval
+- 👨‍💼 **Director**: Gives final approval
+- 👨‍💻 **Admin**: Manages the system and users
 
-### 3. Kemudahan-Kemudahan
-- Dashboard yang mesra pengguna
-- Sistem notifikasi yang jelas
-- Carian dan tapisan permohonan
-- Sejarah permohonan yang lengkap
+### 3. Conveniences
+- User-friendly dashboard
+- Clear notification system
+- Request search and filtering
+- Comprehensive request history
 
-## 🛠️ Panduan Teknikal
+## 🛠️ Technical Guide
 
-### Keperluan Sistem
-- PHP 7.4 ke atas
-- MySQL 5.7 ke atas
+### System Requirements
+- PHP 7.4 or higher
+- MySQL 5.7 or higher
 - Web Server (Apache/Nginx)
 - Composer (PHP Package Manager)
-- wkhtmltopdf (untuk penjanaan PDF)
+- wkhtmltopdf (for PDF generation)
 
-### Cara-Cara Pemasangan
+### Installation Steps
 
 1. **Clone Repository**
    ```bash
@@ -41,123 +41,123 @@ Sistem ini dibangunkan khas untuk memudahkan proses permohonan keluar di Institu
    cd kerajaan
    ```
 
-2. **Pasang Dependencies**
+2. **Install Dependencies**
    ```bash
    composer install
    ```
 
 3. **Setup Database**
-   - Buat database baru di MySQL
-   - Import fail SQL dari folder `database/`
-   - Kemaskini fail `app/config/database.php`
+   - Create a new database in MySQL
+   - Import the SQL file from the `database/` folder
+   - Update the `app/config/database.php` file
 
-4. **Konfigurasi Sistem**
-   - Salin fail `app/config/config.example.php` ke `app/config/config.php`
-   - Kemaskini tetapan mengikut keperluan
-   - Pastikan folder `app/pdf` dan `app/uploads` boleh ditulis
+4. **System Configuration**
+   - Copy the `app/config/config.example.php` file to `app/config/config.php`
+   - Update settings as needed
+   - Ensure the `app/pdf` and `app/uploads` folders are writable
 
-5. **Tetapan Web Server**
-   - Pastikan `mod_rewrite` diaktifkan untuk Apache
-   - Arahkan root directory ke folder `public/`
+5. **Web Server Settings**
+   - Ensure `mod_rewrite` is enabled for Apache
+   - Direct the root directory to the `public/` folder
 
-### Panduan Pemasangan untuk Server Linux
+### Linux Server Installation Guide
 
-Berikut adalah langkah-langkah pemasangan sistem pada server Linux. Panduan ini sesuai untuk kebanyakan distribusi Linux, dengan fokus pada Ubuntu/Debian dan CentOS/RHEL.
+Below are the steps for installing the system on a Linux server. This guide is suitable for most Linux distributions, focusing on Ubuntu/Debian and CentOS/RHEL.
 
-1. **Persiapan Awal**
+1. **Initial Preparation**
    
-   Pertama sekali, kita perlu memastikan sistem dikemaskini:
+   First, we need to ensure the system is updated:
    ```bash
-   # Untuk Ubuntu/Debian
+   # For Ubuntu/Debian
    sudo apt update && sudo apt upgrade -y
    
-   # Untuk CentOS/RHEL
+   # For CentOS/RHEL
    sudo yum update -y
    ```
    
-   Kemudian pasang perisian-perisian yang diperlukan:
+   Then install the required software:
    ```bash
-   # Untuk Ubuntu/Debian
+   # For Ubuntu/Debian
    sudo apt install -y apache2 mysql-server php php-cli php-fpm php-json php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath git unzip curl
    
-   # Untuk CentOS/RHEL
+   # For CentOS/RHEL
    sudo yum install -y httpd mariadb-server php php-cli php-json php-common php-mysqlnd php-zip php-gd php-mbstring php-curl php-xml php-pear php-bcmath git unzip curl
    ```
    
-   > Tip: Perisian yang dipasang mungkin memerlukan ruang sekitar 500MB, jadi pastikan server anda mempunyai cukup ruang.
+   > Tip: The installed software may require around 500MB of space, so make sure your server has enough space.
 
-2. **Hidupkan Servis yang Diperlukan**
+2. **Start Required Services**
    
-   Hidup dan aktifkan Apache dan MySQL secara automatik ketika server dihidupkan:
+   Start and enable Apache and MySQL to run automatically when the server boots:
    ```bash
-   # Untuk Ubuntu/Debian
+   # For Ubuntu/Debian
    sudo systemctl start apache2
    sudo systemctl enable apache2
    sudo systemctl start mysql
    sudo systemctl enable mysql
    
-   # Untuk CentOS/RHEL
+   # For CentOS/RHEL
    sudo systemctl start httpd
    sudo systemctl enable httpd
    sudo systemctl start mariadb
    sudo systemctl enable mariadb
    ```
 
-3. **Konfigurasi Keselamatan MySQL**
+3. **MySQL Security Configuration**
    
-   Untuk keselamatan, adalah sangat penting untuk mengkonfigurasi MySQL dengan betul:
+   For security, it's very important to configure MySQL properly:
    ```bash
    sudo mysql_secure_installation
    ```
    
-   Semasa proses ini, anda boleh:
-   - Tetapkan kata laluan root yang kuat
-   - Buang pengguna anonymous
-   - Hadrkan akses root ke localhost sahaja
-   - Buang pangkalan data ujian
+   During this process, you can:
+   - Set a strong root password
+   - Remove anonymous users
+   - Restrict root access to localhost only
+   - Remove test databases
 
-4. **Sediakan Pangkalan Data**
+4. **Setup Database**
    
-   Mari kita buat pangkalan data dan pengguna untuk aplikasi:
+   Let's create a database and user for the application:
    ```bash
    sudo mysql -u root -p
    ```
    
-   Setelah masuk, jalankan arahan SQL berikut:
+   After logging in, run the following SQL commands:
    ```sql
    CREATE DATABASE kerajaan;
-   CREATE USER 'kerajaan_user'@'localhost' IDENTIFIED BY 'kata_laluan_selamat';
+   CREATE USER 'kerajaan_user'@'localhost' IDENTIFIED BY 'secure_password';
    GRANT ALL PRIVILEGES ON kerajaan.* TO 'kerajaan_user'@'localhost';
    FLUSH PRIVILEGES;
    EXIT;
    ```
    
-   > Penting: Pastikan anda ganti 'kata_laluan_selamat' dengan kata laluan yang lebih kuat dan selamat!
+   > Important: Make sure you replace 'secure_password' with a stronger and more secure password!
 
-5. **Pasang Composer**
+5. **Install Composer**
    
-   Composer diperlukan untuk menguruskan perpustakaan PHP:
+   Composer is needed to manage PHP libraries:
    ```bash
    curl -sS https://getcomposer.org/installer | php
    sudo mv composer.phar /usr/local/bin/composer
    sudo chmod +x /usr/local/bin/composer
    ```
 
-6. **Pasang wkhtmltopdf**
+6. **Install wkhtmltopdf**
    
-   Aplikasi ini memerlukan wkhtmltopdf untuk menjana PDF:
+   This application needs wkhtmltopdf to generate PDFs:
    ```bash
-   # Untuk Ubuntu/Debian
+   # For Ubuntu/Debian
    sudo apt install -y wkhtmltopdf
    
-   # Untuk CentOS/RHEL (agak lebih kompleks)
+   # For CentOS/RHEL (slightly more complex)
    sudo yum install -y xorg-x11-fonts-75dpi xorg-x11-fonts-Type1
    sudo yum install -y https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.centos7.x86_64.rpm
    ```
 
-7. **Pasang Aplikasi**
+7. **Install Application**
    
-   Salin kod aplikasi ke folder web server:
+   Copy the application code to the web server folder:
    ```bash
    cd /var/www/html
    sudo git clone https://github.com/username/kerajaan.git
@@ -165,65 +165,65 @@ Berikut adalah langkah-langkah pemasangan sistem pada server Linux. Panduan ini 
    sudo composer install --no-dev --optimize-autoloader
    ```
    
-   > Nota: Proses ini mungkin mengambil masa beberapa minit bergantung kepada kelajuan server dan sambungan internet.
+   > Note: This process may take several minutes depending on the server speed and internet connection.
 
-8. **Tetapkan Hak Akses Fail**
+8. **Set File Access Rights**
    
-   Permissionan fail yang betul adalah penting untuk keselamatan:
+   Proper file permissions are important for security:
    ```bash
-   # Untuk Ubuntu/Debian
+   # For Ubuntu/Debian
    sudo chown -R www-data:www-data /var/www/html/kerajaan
    
-   # Untuk CentOS/RHEL
+   # For CentOS/RHEL
    sudo chown -R apache:apache /var/www/html/kerajaan
    
-   # Tetapkan permission yang sewajarnya
+   # Set appropriate permissions
    sudo chmod -R 755 /var/www/html/kerajaan
    sudo chmod -R 775 /var/www/html/kerajaan/app/pdf
    sudo chmod -R 775 /var/www/html/kerajaan/app/uploads
    ```
 
-9. **Konfigurasi Aplikasi**
+9. **Application Configuration**
    
-   Sediakan fail konfigurasi:
+   Set up configuration files:
    ```bash
-   # Tetapkan konfigurasi umum
+   # Set general configuration
    sudo cp app/config/config.example.php app/config/config.php
    sudo nano app/config/config.php
    
-   # Tetapkan konfigurasi pangkalan data
+   # Set database configuration
    sudo cp app/config/database.example.php app/config/database.php
    sudo nano app/config/database.php
    ```
    
-   Pastikan URL, nama pangkalan data, nama pengguna dan kata laluan dimasukkan dengan betul.
+   Make sure URL, database name, username, and password are entered correctly.
 
-10. **Import Data Awal**
+10. **Import Initial Data**
     
-    Masukkan data awal ke pangkalan data:
+    Insert initial data into the database:
     ```bash
     sudo mysql -u kerajaan_user -p kerajaan < database/kerajaan.sql
     ```
 
-11. **Konfigurasi Virtual Host**
+11. **Virtual Host Configuration**
     
-    Sediakan domain untuk aplikasi:
+    Set up a domain for the application:
     ```bash
-    # Untuk Ubuntu/Debian
+    # For Ubuntu/Debian
     sudo nano /etc/apache2/sites-available/kerajaan.conf
     ```
     
-    Atau untuk CentOS/RHEL:
+    Or for CentOS/RHEL:
     ```bash
     sudo nano /etc/httpd/conf.d/kerajaan.conf
     ```
     
-    Masukkan konfigurasi ini (ubah domain-anda.com kepada domain yang sebenar):
+    Enter this configuration (change your-domain.com to the actual domain):
     
     ```apache
     <VirtualHost *:80>
-        ServerName domain-anda.com
-        ServerAdmin webmaster@domain-anda.com
+        ServerName your-domain.com
+        ServerAdmin webmaster@your-domain.com
         DocumentRoot /var/www/html/kerajaan/public
 
         <Directory /var/www/html/kerajaan/public>
@@ -237,148 +237,148 @@ Berikut adalah langkah-langkah pemasangan sistem pada server Linux. Panduan ini 
     </VirtualHost>
     ```
 
-12. **Aktifkan Konfigurasi Web**
+12. **Enable Web Configuration**
     
-    Untuk Ubuntu/Debian:
+    For Ubuntu/Debian:
     ```bash
     sudo a2ensite kerajaan.conf
     sudo a2enmod rewrite
     sudo systemctl restart apache2
     ```
     
-    Untuk CentOS/RHEL:
+    For CentOS/RHEL:
     ```bash
     sudo systemctl restart httpd
     ```
 
-13. **Tetapkan Firewall**
+13. **Configure Firewall**
     
-    Buka port yang diperlukan pada firewall:
+    Open required ports on the firewall:
     ```bash
-    # Untuk Ubuntu/Debian dengan UFW
+    # For Ubuntu/Debian with UFW
     sudo ufw allow 80/tcp
     sudo ufw allow 443/tcp
     
-    # Untuk CentOS/RHEL dengan FirewallD
+    # For CentOS/RHEL with FirewallD
     sudo firewall-cmd --permanent --add-service=http
     sudo firewall-cmd --permanent --add-service=https
     sudo firewall-cmd --reload
     ```
 
-14. **Penyelenggaraan Berkala**
+14. **Regular Maintenance**
     
-    Beberapa tips untuk penyelenggaraan sistem:
+    Some tips for system maintenance:
     
-    * **Backup Pangkalan Data Harian**
+    * **Daily Database Backup**
       
-      Tetapkan jadual backup harian dengan crontab:
+      Set up a daily backup schedule with crontab:
       ```bash
       sudo crontab -e
       ```
       
-      Tambah baris ini untuk backup pada jam 2 pagi:
+      Add this line for backup at 2 AM:
       ```
-      0 2 * * * mysqldump -u kerajaan_user -p'kata_laluan_selamat' kerajaan > /var/backups/kerajaan_$(date +\%Y\%m\%d).sql
+      0 2 * * * mysqldump -u kerajaan_user -p'secure_password' kerajaan > /var/backups/kerajaan_$(date +\%Y\%m\%d).sql
       ```
       
-      > Peringatan: Simpan backup di lokasi luaran atau cloud untuk keselamatan tambahan.
+      > Reminder: Store backups in an external location or cloud for additional security.
       
-    * **Pembersihan Fail Sementara**
+    * **Temporary File Cleaning**
       
-      Buang fail sementara yang lebih lama dari seminggu:
+      Remove temporary files older than a week:
       ```
       0 3 * * 0 find /var/www/html/kerajaan/app/pdf/temp -type f -mtime +7 -delete
       ```
 
-15. **Pemantauan Sistem**
+15. **System Monitoring**
     
-    * **Semak Log Untuk Isu**
+    * **Check Logs For Issues**
       ```bash
-      # Untuk Ubuntu/Debian
+      # For Ubuntu/Debian
       sudo tail -f /var/log/apache2/kerajaan-error.log
       
-      # Untuk CentOS/RHEL
+      # For CentOS/RHEL
       sudo tail -f /var/log/httpd/kerajaan-error.log
       ```
     
-    * **Pastikan Sistem Sentiasa Dikemaskini**
+    * **Keep System Updated**
       ```bash
-      # Untuk Ubuntu/Debian - boleh dijadualkan setiap minggu
+      # For Ubuntu/Debian - can be scheduled weekly
       sudo apt update && sudo apt upgrade -y
       
-      # Untuk CentOS/RHEL
+      # For CentOS/RHEL
       sudo yum update -y
       ```
 
-**Pemasangan HTTPS (Amat Digalakkan)**
+**HTTPS Installation (Highly Recommended)**
 
-Untuk keselamatan yang lebih baik, sila pasang sijil SSL dengan Let's Encrypt:
+For better security, please install an SSL certificate with Let's Encrypt:
 
 ```bash
-# Untuk Ubuntu/Debian
+# For Ubuntu/Debian
 sudo apt install -y certbot python3-certbot-apache
-sudo certbot --apache -d domain-anda.com
+sudo certbot --apache -d your-domain.com
 
-# Untuk CentOS/RHEL
+# For CentOS/RHEL
 sudo yum install -y certbot python3-certbot-apache
-sudo certbot --apache -d domain-anda.com
+sudo certbot --apache -d your-domain.com
 ```
 
-Sijil ini perlu diperbaharui setiap 90 hari, tetapi Let's Encrypt akan melakukannya secara automatik.
+This certificate needs to be renewed every 90 days, but Let's Encrypt will do this automatically.
 
-## 👥 Peranan dan Tanggungjawab
+## 👥 Roles and Responsibilities
 
-### Pengguna Biasa
-- Membuat permohonan keluar
-- Melihat status permohonan
-- Muat turun borang yang diluluskan
+### Regular User
+- Create exit requests
+- View request status
+- Download approved forms
 
-### Ketua Jabatan/Unit
-- Menyemak permohonan staf jabatan
-- Memberi sokongan atau menolak permohonan
-- Menulis catatan jika perlu
+### Department/Unit Head
+- Review department staff requests
+- Approve or reject requests
+- Write notes if necessary
 
-### Pengarah
-- Memberi kelulusan muktamad
-- Menyemak permohonan yang telah disokong
-- Memantau pergerakan staf
+### Director
+- Provide final approval
+- Review requests that have been supported
+- Monitor staff movement
 
-### Admin Sistem
-- Menguruskan akaun pengguna
-- Menetapkan peranan pengguna
-- Memantau penggunaan sistem
+### System Admin
+- Manage user accounts
+- Set user roles
+- Monitor system usage
 
-## 📱 Penggunaan Sistem
+## 📱 System Usage
 
-### Cara Membuat Permohonan
-1. Log masuk ke sistem
-2. Klik "Permohonan Baru"
-3. Isi maklumat yang diperlukan
-4. Semak dan hantar permohonan
-5. Tunggu kelulusan dari Ketua dan Pengarah
+### How to Create a Request
+1. Log in to the system
+2. Click "New Request"
+3. Fill in the required information
+4. Review and submit the request
+5. Wait for approval from Head and Director
 
-### Cara Menyemak Status
-1. Log masuk ke sistem
-2. Lihat senarai permohonan di dashboard
-3. Klik pada permohonan untuk butiran lanjut
-4. Status akan dipaparkan dengan warna berbeza:
-   - 🟡 Menunggu Kelulusan
-   - 🔵 Diluluskan oleh Ketua
-   - 🟢 Diluluskan
-   - 🔴 Ditolak
+### How to Check Status
+1. Log in to the system
+2. View the list of requests on the dashboard
+3. Click on a request for details
+4. Status will be displayed with different colors:
+   - 🟡 Pending Approval
+   - 🔵 Approved by Head
+   - 🟢 Approved
+   - 🔴 Rejected
 
-## 📞 Sokongan
+## 📞 Support
 
-Jika menghadapi sebarang masalah atau memerlukan bantuan:
-- Hubungi Admin Sistem di ext. XXXX
-- Emel: admin@ipgkbm.edu.my
-- Bilik ICT, Aras 1, Blok A
+If you encounter any problems or need assistance:
+- Contact the System Admin at ext. XXXX
+- Email: admin@ipgkbm.edu.my
+- ICT Room, Level 1, Block A
 
-## 🔄 Pengemaskinian
+## 🔄 Updates
 
-Sistem ini akan dikemaskini dari semasa ke semasa untuk penambahbaikan. Sebarang cadangan boleh diajukan kepada pihak ICT untuk pertimbangan.
+This system will be updated from time to time for improvements. Any suggestions can be submitted to the ICT team for consideration.
 
-## 📜 Lesen
+## 📜 License
 
-Hak Cipta Terpelihara © 2024 Institut Pendidikan Guru Kampus Bahasa Melayu
-Dibangunkan oleh Unit ICT, IPG KBM 
+Copyright © 2024 Institute of Teacher Education Malay Language Campus
+Developed by ICT Unit, IPG KBM 
