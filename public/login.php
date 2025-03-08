@@ -77,6 +77,10 @@ include '../app/views/includes/header.php';
                 </p>
             </div>
             <div class="card-content">
+                <div class="has-text-centered mb-5">
+                    <img src="<?= SITE_URL ?>/images/logo_ipgkbm_2024.png" alt="Logo IPGKBM" style="max-width: 200px; height: auto;">
+                </div>
+                
                 <?php if (!empty($error)): ?>
                     <div class="notification is-danger is-light">
                         <button class="delete"></button>
